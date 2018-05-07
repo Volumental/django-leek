@@ -26,7 +26,7 @@ def save_task_to_db(new_task):
 
 def save_task_failed(task,exception):
     
-    t = models.FailedTasks(task_id=task.db_id,exception=exception.message)
+    t = models.FailedTasks(task_id=task.db_id,exception=str(exception))
     t.save()
     
     

@@ -36,7 +36,7 @@ class Worker(threading.Thread):
             self.worker_queue.put(new_task)
             return True,"sent"
         except Exception as e:
-            return False,"Worker: %s"%e.message
+            return False,"Worker: %s"%str(e)
     
     def run_task(self,task):
         
