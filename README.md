@@ -1,4 +1,5 @@
-# Django Queue
+# Django Leek
+[![Build Status](https://travis-ci.com/Volumental/django-leek.svg?branch=master)](https://travis-ci.com/Volumental/django-leek)
 
 **A simple async tasks queue via a django app and SocketServer, zero configs.**
 
