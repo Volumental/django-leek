@@ -3,7 +3,7 @@ import logging
 import os
 import sys
 import threading
-import Queue
+import queue
 
 # environ settings variable, should be the same as in manage.py
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
@@ -16,10 +16,10 @@ from . import helpers
 class Worker(threading.Thread):
     def __init__(self,logger_name=None):
         
-        threading.Thread.__init__(self, name="django-tasks-queue")
+        threading.Thread.__init__(self, name="django-leek")
         self._stopevent = threading.Event()
         self.setDaemon(1)
-        self.worker_queue = Queue.Queue()
+        self.worker_queue = queue.Queue()
         self.tasks_counter = 0
         if logger_name != None:
             self.logger = logging.getLogger(logger_name)

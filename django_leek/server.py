@@ -1,5 +1,6 @@
-import SocketServer
+import socketserver
 import threading
+
 from . import worker_manager
 
 Dcommands = {
@@ -9,7 +10,7 @@ Dcommands = {
     'stop':worker_manager.stop
 }
 
-class TaskSocketServer(SocketServer.BaseRequestHandler):
+class TaskSocketServer(socketserver.BaseRequestHandler):
     
     def handle(self):
         
@@ -58,7 +59,7 @@ class TaskSocketServerThread(threading.Thread):
     
     def run(self):
         
-        self.server = SocketServer.TCPServer((self.host,self.port), TaskSocketServer)
+        self.server = socketserver.TCPServer((self.host,self.port), TaskSocketServer)
         
     
     
