@@ -12,7 +12,7 @@ with open('README.md') as f:
 setup(
     name='django-leek',
     version='0.1',
-    packages=find_packages(),
+    packages='django_leek',
     include_package_data=True,
     license='MIT License',
     description='A simple Django app to offload tasks from main web server',
