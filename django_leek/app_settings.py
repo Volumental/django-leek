@@ -1,6 +1,8 @@
 from django.conf import settings
 
 
+SECRET_KEY="just to make tests run"
+
 D = {
     "MAX_RETRIES": 3,
     "TASKS_HOST": "localhost",
