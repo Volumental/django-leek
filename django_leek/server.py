@@ -17,7 +17,7 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
         try:
             data = self.request.recv(5000).strip() #like the pickled task field
         except Exception as e:
-            response = (False,"SocketServer:%s"%str(e))
+            response = (False, "SocketServer: {}".format(e).encode())
             self.request.send(response)
         
         
@@ -25,22 +25,22 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
             try:
                 worker_response = Dcommands[data]()
                 if worker_response == 'Worker Off':
-                    response = (False,worker_response)
+                    response = (False,worker_response.encode())
                 else:
-                    response = (True,worker_response,)
+                    response = (True,worker_response.encode(),)
             except Exception as e:
-                response =  (False,"TaskServer Command: %s"%str(e),)                
+                response =  (False,"TaskServer Command: {}".format(e).encode(),)                
         else:        
             try:
                 worker_response = worker_manager.put_task(data) #a tuple
                 response = worker_response
             except Exception as e:
-                response =  (False,"TaskServer Put: %s"%str(e),)
+                response =  (False,"TaskServer Put: {}".format(e).encode(),)
             
         try:    
             self.request.send(str(response))
         except Exception as e:
-            self.request.send("SocketServer Response:%s"%str(e))
+            self.request.send("SocketServer Response: {}".format(e).encode())
         
         
 class TaskSocketServerThread(threading.Thread):
