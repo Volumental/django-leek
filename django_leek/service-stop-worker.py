@@ -1,5 +1,5 @@
 import socket
-from app_settings import TASKS_HOST,TASKS_PORT
+from settings import TASKS_HOST, TASKS_PORT
     
 
 def stop_server():

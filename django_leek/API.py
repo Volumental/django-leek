@@ -1,7 +1,7 @@
 import socket
 from .task import Task
 from . import helpers
-from .app_settings import TASKS_HOST,TASKS_PORT
+from .settings import TASKS_HOST,TASKS_PORT
 
 
 def push_task_to_queue(a_callable,*args,**kwargs):

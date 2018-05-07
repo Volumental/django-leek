@@ -1,6 +1,6 @@
 # run from shell with python -m and the full python path
 # to allow relative imports
-from .app_settings import TASKS_PORT
+from .settings import TASKS_PORT
 from . import worker_manager
 from .server import TaskSocketServerThread
 import time

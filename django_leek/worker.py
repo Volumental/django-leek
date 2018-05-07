@@ -12,7 +12,7 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "mysite.settings"
 import django
 
 
-from . import app_settings
+from . import settings
 from . import helpers
 
 
@@ -40,12 +40,12 @@ class Worker(threading.Thread):
             return False, "Worker: %s"%str(e)
 
     def run_task(self, task):
-        for i in range(app_settings.MAX_RETRIES):
+        for i in range(settings.MAX_RETRIES):
             try:
                 task.run()
                 break
             except:
-                if i < app_settings.MAX_RETRIES - 1:
+                if i < settings.MAX_RETRIES - 1:
                     pass
                 else:
                     raise

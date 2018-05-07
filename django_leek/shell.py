@@ -1,6 +1,6 @@
 import socket
 import sys
-from app_settings import TASKS_HOST,TASKS_PORT
+from settings import TASKS_HOST, TASKS_PORT
 
 
 def send_data():
