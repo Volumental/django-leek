@@ -1,5 +1,5 @@
 import socket
-from settings import TASKS_HOST, TASKS_PORT
+from .settings import TASKS_HOST, TASKS_PORT
     
 
 def stop_server():
@@ -8,8 +8,8 @@ def stop_server():
     sock.send("stop")
     received = sock.recv(1024)
     sock.close()
-    print "Sent: %s" % "stop"
-    print "Received: %s" % received
+    print("Sent: %s" % "stop")
+    print("Received: %s" % received)
 
 
 if __name__ == "__main__":
