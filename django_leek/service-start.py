@@ -6,9 +6,7 @@ from .server import TaskSocketServerThread
 import time
 
 worker_manager.start()
-server_thread = TaskSocketServerThread('localhost',TASKS_PORT)
+server_thread = TaskSocketServerThread('localhost', TASKS_PORT)
 time.sleep(5)
 socket_server = server_thread.socket_server()
 socket_server.serve_forever()
-
-

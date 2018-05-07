@@ -13,10 +13,9 @@ django.setup()
 # edit to the correct mysite.tasks_queue path
 from mysite.tasks_queue.models import FailedTasks,QueuedTasks
 
-Lfailed_tasks_id = FailedTasks.objects.values_list("task_id",flat=True)
+
+Lfailed_tasks_id = FailedTasks.objects.values_list("task_id", flat=True)
 tasks = QueuedTasks.objects.filter(pk__in=Lfailed_tasks_id)
 for r in tasks:
     task = pickle.loads(base64.b64decode(r.pickled_task))
     task.run()
-    
-    
