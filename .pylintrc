@@ -1,0 +1,3 @@
+ [MASTER]
+ errors-only=yes
+ load-plugins=pylint_django
