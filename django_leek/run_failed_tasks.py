@@ -11,7 +11,7 @@ django.setup()
 
  
 # edit to the correct mysite.tasks_queue path
-from mysite.tasks_queue.models import FailedTasks,QueuedTasks
+from .models import FailedTasks, QueuedTasks
 
 
 Lfailed_tasks_id = FailedTasks.objects.values_list("task_id", flat=True)
