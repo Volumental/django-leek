@@ -5,3 +5,8 @@ __pycache__/
 
 # Unit test / coverage reports
 .coverage
+
+# setuptools
+/build/
+/dist/*.whl
+*.egg-info/
