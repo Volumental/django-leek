@@ -1,3 +1,4 @@
+import os
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 SECRET_KEY = "not so secret"
 
@@ -14,4 +15,10 @@ DATABASES = {
     }
 }
 
-ROOT_URLCONF = 'test_app.urls'
+ROOT_URLCONF = 'test_app.app'
+
+PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS': [ os.path.join(PROJECT_PATH, 'templates/')]}
+]

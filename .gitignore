@@ -10,3 +10,6 @@ __pycache__/
 /build/
 /dist/*.whl
 *.egg-info/
+
+# test app
+db.sqlite3
