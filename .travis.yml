@@ -6,3 +6,4 @@ cache: pip
 script:
   - pylint django_leek
   - coverage run $(which django-admin) test --pythonpath=. --settings=django_leek.settings
+  - codecov

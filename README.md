@@ -2,7 +2,7 @@
 ![Logo](logo.svg)
 
 [![Build Status](https://travis-ci.com/Volumental/django-leek.svg?branch=master)](https://travis-ci.com/Volumental/django-leek)
-
+[![Code coverage](https://codecov.io/gh/Volumental/django-leek/branch/master/graph/badge.svg)](https://codecov.io/gh/Volumental/django-leek)
 The _simple_ and _slick_ way to run async tasks in Django.
 
 * Django-friendly API
