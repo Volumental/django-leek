@@ -2,7 +2,7 @@ from django.conf.urls import url
 from django.http import HttpResponse
 from django.shortcuts import render
 
-from django_leek.API import Leek, push_task_to_queue
+from django_leek.api import Leek, push_task_to_queue
 
 leek = Leek()
 
