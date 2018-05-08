@@ -11,7 +11,7 @@ with open('README.md') as f:
 
 setup(
     name='django-leek',
-    version='0.1',
+    version='0.2',
     packages=['django_leek'],
     install_requires = ['django>=1.11'],
     include_package_data=True,
