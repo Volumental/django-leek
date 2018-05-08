@@ -5,4 +5,4 @@ python:
 cache: pip
 script:
   - pylint django_leek
-  - ./manage.sh django_leek test
+  - coverage run $(which django-admin) test --pythonpath=. --settings=django_leek.settings
