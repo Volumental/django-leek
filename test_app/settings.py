@@ -5,6 +5,7 @@ SECRET_KEY = "not so secret"
 DEBUG=True
 
 INSTALLED_APPS = [
+    'test_app',
     'django_leek'
 ]
 
