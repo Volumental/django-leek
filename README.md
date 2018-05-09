@@ -3,6 +3,7 @@
 
 [![Build Status](https://travis-ci.com/Volumental/django-leek.svg?branch=master)](https://travis-ci.com/Volumental/django-leek)
 [![Code coverage](https://codecov.io/gh/Volumental/django-leek/branch/master/graph/badge.svg)](https://codecov.io/gh/Volumental/django-leek)
+
 The _simple_ and _slick_ way to run async tasks in Django.
 
 * Django-friendly API
@@ -69,27 +70,30 @@ The workflow that runs an async task:
 Depends on the traffic: SocketServer is simple, but solid, and as the site gets more traffic, it's possible to move the django-queue server to another machine, separate database etc. At some point, probably, it's better to pick Celery. Until then, django-leek is a simple, solid, and no-hustle solution. 
 
 ## Settings
-To change the default django-queue settings, add a `TASKS_QUEUE` dictionary to your project main `settings.py` file.
+To change the default django-queue settings, add a `LEEK` dictionary to your project main `settings.py` file.
 
 This is the dictionary and the defaults:
 
-	TASKS_QUEUE = {
-		"MAX_RETRIES": 3,
-     	"TASKS_HOST": "localhost",
-     	"TASKS_PORT": 8002}
+	LEEK = {
+		'max_retries': 3,
+		'bind': "localhost:8002",
+     	'host': "localhost",
+     	'port': 8002}
 
-**MAX_RETRIES**    
-The number of times the Worker thread will try to run a task before skipping it. The default is 3.
+**`max_retries`**
+The number of times the Worker thread will try to run a task before skipping it.
 
-**TASKS_HOST**    
-The host that runs the SocketServer. the default is 'localhost'.
+**`bind`**
+The leek server will bind here.
 
-**TASKS_PORT**    
-The port that SocketServer listens to. The default is 8002.
+**`host`**
+The django server will connect to this host when notifying leek of jobs.
+
+**`port`**
+The django server will connect to this port when notifying leek of jobs.
 
 ## Persistence
-
-### Tasks saved in the database
+The following models are used.
 
 **QueuedTasks**   
 The model saves every tasks pushed to the queue.    
@@ -115,18 +119,6 @@ The SQL to delete these tasks:
 	
 In a similar way, delete the failed tasks.
 You can run a cron script, or other script, to purge the tasks.
-
-## Failed Tasks
-
-### Retry failed tasks with a script
-
-When the Worker fails to run the task `MAX_RETRIES` times, it saves the **task_id** and the exception message to the `FailedTasks` model.
-
-To re-try failed tasks, after they are saved to the database, you can run this script, from shell:
-
-	$ python tasks_queue/run_failed_tasks.py
-	
-*Note: The path is provided in the script with `mysite`. Edit this entry with the full path to the tasks_queue in your project, similar to the path provided in the project's manage.py*
 
 
 ## Authors
