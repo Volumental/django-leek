@@ -40,18 +40,3 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
             self.request.send(str(response))
         except Exception as e:
             self.request.send("SocketServer Response: {}".format(e).encode())
-        
-        
-class TaskSocketServerThread(threading.Thread):
-    def __init__(self,host,port):
-        threading.Thread.__init__(self, name='tasks-socket-server')
-        self.host = host
-        self.port = port
-        self.setDaemon(1)
-        self.start()
-
-    def socket_server(self):
-        return self.server
-    
-    def run(self):
-        self.server = socketserver.TCPServer((self.host, self.port), TaskSocketServer)
