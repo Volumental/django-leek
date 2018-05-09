@@ -1,10 +1,10 @@
 import socket
-from .settings import TASKS_HOST, TASKS_PORT
+from .settings import HOST, PORT
     
 
 def stop_server():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((TASKS_HOST, TASKS_PORT))
+    sock.connect((HOST, PORT))
     sock.send("stop")
     received = sock.recv(1024)
     sock.close()
