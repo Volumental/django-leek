@@ -37,6 +37,6 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
                 response =  (False, "TaskServer Put: {}".format(e).encode(),)
 
         try:
-            self.request.send(str(response))
+            self.request.send(str(response).encode('utf-8'))
         except Exception as e:
             self.request.send("SocketServer Response: {}".format(e).encode())
