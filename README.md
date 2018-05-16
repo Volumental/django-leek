@@ -45,8 +45,29 @@ With `django-leek` you can get up and running quickly The more complex distribut
 5. Go nuts
 
     ```python
+	leek = Leek()
+	@leek.task
+	def send_mail(to):
+	    do_what_ever()
+	
+	send_mail.offload(to='foobar@example.com')
+	```
+
+	You can also use the "old" as found in `django-queue`
+    ```python
 	push_task_to_queue(send_mail, to='foobar@example.com')	
     ```
+
+6. It's easy to unit test code that in production offloads work to the Leek server.
+    
+	```python
+	def _invoke(a_callable, *args, **kwargs):
++    a_callable(*args, **kwargs)
+	@patch('django_leek.api.push_task_to_queue', _invoke)
+	def test_mytest():
+		send_mail.offload(to='sync@leek.com')  # now runs synchronously, like a normal function
+    ```
+
 
 ## Technical overview
 In a nutshell, a python SocketServer runs in the background, listening on a tcp socket. SocketServer gets the request to run a task from it's socket, puts the task on a Queue. A Worker thread picks tasks from this Queue, and runs the tasks one by one.
