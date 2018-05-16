@@ -15,7 +15,7 @@ from django_leek import helpers
 class LeekCommandTestCase(TestCase):
     def test_leek(self, serve_forever):
         call_command('leek')
-        serve_forever.assert_called()
+        serve_forever.assert_called_with()
 
     def test_keyboard_interrupt(self, serve_forever):
         serve_forever.side_effect = KeyboardInterrupt
