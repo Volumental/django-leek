@@ -1,8 +1,15 @@
-from unittest.mock import patch
+import base64
+import pickle
+from unittest.mock import patch, MagicMock
 import socketserver
 
 from django.test import TestCase
 from django.core.management import call_command
+
+from django_leek.server import TaskSocketServer
+from django_leek.task import Task
+from django_leek import helpers
+
 
 @patch.object(socketserver.TCPServer, 'serve_forever')
 class LeekCommandTestCase(TestCase):
@@ -13,3 +20,39 @@ class LeekCommandTestCase(TestCase):
     def test_keyboard_interrupt(self, serve_forever):
         serve_forever.side_effect = KeyboardInterrupt
         call_command('leek')
+
+def f():
+    pass
+
+class TestServer(TestCase):
+    def setUp(self):
+        self.request = MagicMock()
+
+    def _request(self, data):
+        if isinstance(data, Exception):
+            self.request.recv.side_effect = data
+        else:
+            self.request.recv.return_value = data
+
+    def _response(self):
+        return b''.join(call[0][0] for call in self.request.send.call_args_list)
+
+    def act(self):
+        TaskSocketServer(self.request, 'client adress', 'server')
+
+    def test_ping(self):
+        self._request('ping')        
+        self.act()
+        self.assertEqual(self._response(), b'(True, b"I\'m OK")')
+
+    # This apparently crashes the server
+    #def test_recv_error(self):
+    #    self._request(OSError('Nuclear Winter'))        
+    #    self.act()
+    #    self.assertEqual(self._response(), b'(True, b"I\'m OK")')
+
+    def test_task(self):
+        task = helpers.save_task_to_db(Task(f))
+        self._request(base64.b64encode(pickle.dumps(task)))        
+        self.act()
+        self.assertEqual(self._response(), b"(True, 'sent')")
