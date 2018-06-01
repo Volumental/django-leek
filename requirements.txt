@@ -1,5 +1,7 @@
 django==1.11
+
+# for development
 pylint
 pylint-django
 coverage
-coveralls
+coverage-shield
