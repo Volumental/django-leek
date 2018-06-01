@@ -16,7 +16,6 @@ from . import helpers
 class Worker(threading.Thread):
     def __init__(self, logger_name=None):
         threading.Thread.__init__(self, name="django-leek")
-        self._stopevent = threading.Event()
         self.setDaemon(1)
         self.worker_queue = queue.Queue()
         self.tasks_counter = 0
@@ -40,13 +39,9 @@ class Worker(threading.Thread):
         task.run()
 
     def stop_thread(self, timeout=None):
-        """ Stop the thread and wait for it to end. """
-        if self.worker_queue != None:
-            self._stopevent.set()
-            self.logger.warn('Worker stop event set')
-            return "Stop Set"
-        else:
-            return "Worker Off"        
+        """Stop the thread and wait for it to end."""
+        self.worker_queue.put(None)
+        self.join()
 
     def ping(self):
         if self.worker_queue != None:
@@ -67,10 +62,14 @@ class Worker(threading.Thread):
         # thread safe locals: L = threading.local(), then L.foo="baz"
         django.setup()
         self.logger.info('Worker Starts')
-        while not self._stopevent.isSet():
+        done = False
+        while not done:
             try:
                 task = self.worker_queue.get()
-                self.run_task(task)
+                if task is None:
+                    done = True
+                else:
+                    self.run_task(task)
             except Exception as e:
                 helpers.save_task_failed(task,e)
             else:
