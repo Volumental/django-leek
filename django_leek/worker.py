@@ -43,12 +43,6 @@ class Worker(threading.Thread):
         self.worker_queue.put(None)
         self.join()
 
-    def ping(self):
-        if self.worker_queue != None:
-            return "I'm OK"
-        else:
-            return "Worker Off"
-
     def status_waiting(self):
         return self.worker_queue.qsize()
 

@@ -40,11 +40,6 @@ class TestServer(TestCase):
     def act(self):
         TaskSocketServer(self.request, 'client adress', 'server')
 
-    def test_ping(self):
-        self._request('ping')        
-        self.act()
-        self.assertEqual(self._response(), b'(True, b"I\'m OK")')
-
     def test_recv_error(self):
         self._request(OSError('Nuclear Winter'))        
         self.act()

@@ -9,7 +9,6 @@ log = logging.getLogger(__name__)
 
 
 Dcommands = {
-    'ping': worker_manager.ping,
     'waiting': worker_manager.waiting,
     'handled': worker_manager.hanled,
     'stop': worker_manager.stop
@@ -23,10 +22,7 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
             if data in Dcommands.keys():
                 try:
                     worker_response = Dcommands[data]()
-                    if worker_response == 'Worker Off':
-                        response = (False, worker_response.encode())
-                    else:
-                        response = (True, worker_response.encode(),)
+                    response = (True, worker_response.encode(),)
                     self.request.send(str(response).encode())
                 except Exception as e:
                     response =  (False, "TaskServer Command: {}".format(e).encode(),)

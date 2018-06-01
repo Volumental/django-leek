@@ -14,10 +14,6 @@ def stop():
     return worker_thread.stop_thread()
 
 
-def ping():
-    return worker_thread.ping()
-
-
 def waiting():
     return worker_thread.status_waiting()
 
