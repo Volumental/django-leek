@@ -6,9 +6,6 @@ import threading
 import queue
 
 
-# environ settings variable, should be the same as in manage.py
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
-os.environ["DJANGO_SETTINGS_MODULE"] = "mysite.settings"
 import django
 
 
@@ -38,6 +35,17 @@ class Worker(threading.Thread):
             return True, "sent"
         except Exception as e:
             return False, "Worker: %s"%str(e)
+
+    def run_task(self, task):
+        for i in range(settings.MAX_RETRIES):
+            try:
+                task.run()
+                break
+            except:
+                if i < settings.MAX_RETRIES - 1:
+                    pass
+                else:
+                    raise
 
     def run_task(self, task):
         for i in range(settings.MAX_RETRIES):
