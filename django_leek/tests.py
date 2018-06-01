@@ -45,11 +45,9 @@ class TestServer(TestCase):
         self.act()
         self.assertEqual(self._response(), b'(True, b"I\'m OK")')
 
-    # This apparently crashes the server
-    #def test_recv_error(self):
-    #    self._request(OSError('Nuclear Winter'))        
-    #    self.act()
-    #    self.assertEqual(self._response(), b'(True, b"I\'m OK")')
+    def test_recv_error(self):
+        self._request(OSError('Nuclear Winter'))        
+        self.act()
 
     def test_task(self):
         task = helpers.save_task_to_db(Task(f))
