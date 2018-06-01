@@ -11,7 +11,7 @@ with open('README.md') as f:
 
 setup(
     name='django-leek',
-    version='0.5',
+    version='0.6',
     packages=find_packages(exclude=['test_app']),
     install_requires = ['django>=1.11'],
     include_package_data=True,
@@ -25,9 +25,8 @@ setup(
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 1.9',  # replace "X.Y" as appropriate
+        'Framework :: Django :: 1.11',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',  # example license
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3.5',
