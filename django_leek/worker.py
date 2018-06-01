@@ -47,17 +47,6 @@ class Worker(threading.Thread):
                 else:
                     raise
 
-    def run_task(self, task):
-        for i in range(settings.MAX_RETRIES):
-            try:
-                task.run()
-                break
-            except:
-                if i < settings.MAX_RETRIES - 1:
-                    pass
-                else:
-                    raise
-
     def stop_thread(self, timeout=None):
         """ Stop the thread and wait for it to end. """
         if self.worker_queue != None:
