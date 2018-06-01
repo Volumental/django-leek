@@ -6,9 +6,6 @@ import threading
 import queue
 
 
-# environ settings variable, should be the same as in manage.py
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
-os.environ["DJANGO_SETTINGS_MODULE"] = "mysite.settings"
 import django
 
 
@@ -16,18 +13,15 @@ from . import settings
 from . import helpers
 
 
+log = logging.getLogger(__name__)
+
+
 class Worker(threading.Thread):
-    def __init__(self, logger_name=None):
+    def __init__(self):
         threading.Thread.__init__(self, name="django-leek")
-        self._stopevent = threading.Event()
         self.setDaemon(1)
         self.worker_queue = queue.Queue()
         self.tasks_counter = 0
-        if logger_name != None:
-            self.logger = logging.getLogger(logger_name)
-        else:
-            self.logger = logging
-        
         self.start()
 
     def put_task_on_queue(self, new_pickled_task):
@@ -40,30 +34,12 @@ class Worker(threading.Thread):
             return False, "Worker: %s"%str(e)
 
     def run_task(self, task):
-        for i in range(settings.MAX_RETRIES):
-            try:
-                task.run()
-                break
-            except:
-                if i < settings.MAX_RETRIES - 1:
-                    pass
-                else:
-                    raise
+        task.run()
 
     def stop_thread(self, timeout=None):
-        """ Stop the thread and wait for it to end. """
-        if self.worker_queue != None:
-            self._stopevent.set()
-            self.logger.warn('Worker stop event set')
-            return "Stop Set"
-        else:
-            return "Worker Off"        
-
-    def ping(self):
-        if self.worker_queue != None:
-            return "I'm OK"
-        else:
-            return "Worker Off"
+        """Stop the thread and wait for it to end."""
+        self.worker_queue.put(None)
+        self.join()
 
     def status_waiting(self):
         return self.worker_queue.qsize()
@@ -77,15 +53,22 @@ class Worker(threading.Thread):
         # a thread while loop cycle is atomic
         # thread safe locals: L = threading.local(), then L.foo="baz"
         django.setup()
-        self.logger.info('Worker Starts')
-        while not self._stopevent.isSet():
+        log.info('Worker Starts')
+        done = False
+        while not done:
             try:
                 task = self.worker_queue.get()
+                if task is None:
+                    done = True
+                    break
+                
+                log.info('running task...')
                 self.run_task(task)
-            except Exception as e:
-                helpers.save_task_failed(task,e)
-            else:
                 helpers.save_task_success(task)
-
+                log.info('...successfully')
+            except Exception as e:
+                log.exception("...task failed")
+                helpers.save_task_failed(task, e)
+                
         self.worker_queue = None
-        self.logger.warn('Worker stopped, %s tasks handled'%self.tasks_counter)
+        log.info('Worker stopped, {} tasks handled.'.format(self.tasks_counter))

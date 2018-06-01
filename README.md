@@ -2,7 +2,7 @@
 ![Logo](logo.svg)
 
 [![Build Status](https://travis-ci.com/Volumental/django-leek.svg?branch=master)](https://travis-ci.com/Volumental/django-leek)
-[![Coverage Status](https://coveralls.io/repos/github/Volumental/django-leek/badge.svg?branch=master)](https://coveralls.io/github/Volumental/django-leek?branch=master)
+![Code Coverage](https://badges-io.now.sh/badge/Volumental/django-leek/coverage.svg)
 
 The _simple_ and _slick_ way to run async tasks in Django.
 
@@ -96,13 +96,9 @@ To change the default django-queue settings, add a `LEEK` dictionary to your pro
 This is the dictionary and the defaults:
 
 	LEEK = {
-		'max_retries': 3,
 		'bind': "localhost:8002",
      	'host': "localhost",
      	'port': 8002}
-
-**`max_retries`**
-The number of times the Worker thread will try to run a task before skipping it.
 
 **`bind`**
 The leek server will bind here.
@@ -124,7 +120,7 @@ The task is pickled as a `tasks_queue.tasks.Task` object, which is a simple clas
 The Worker thread saves to this model the `task_id` of every task that was carried out successfuly. **task_id** is the task's `QueuedTasks` id.
 
 **FailedTasks**    
-After the Worker tries to run a task several times according to `MAX_RETRIES`, and the task still fails, the Worker saves it to this model. The failed taks is saved by the `task_id`, with the exception message. Only the exception from the last run is saved.
+After the Worker tries to run a task and it fails by raising an exception, the Worker saves it to this model. The failed taks is saved by the `task_id`, with the exception message. Only the exception from the last run is saved.
 
 
 ### Purge Tasks

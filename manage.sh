@@ -1,5 +1,5 @@
 #!/bin/sh
 APP=$1
 shift
-source venv/bin/activate
+. venv/bin/activate
 django-admin $@ --pythonpath=. --settings=$APP.settings
