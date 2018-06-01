@@ -79,14 +79,13 @@ class Worker(threading.Thread):
         django.setup()
         self.logger.info('Worker Starts')
         while not self._stopevent.isSet():
-            if not self.worker_queue.empty():
-                try:
-                    task = self.worker_queue.get()
-                    self.run_task(task)
-                except Exception as e:
-                    helpers.save_task_failed(task,e)
-                else:
-                    helpers.save_task_success(task)
+            try:
+                task = self.worker_queue.get()
+                self.run_task(task)
+            except Exception as e:
+                helpers.save_task_failed(task,e)
+            else:
+                helpers.save_task_success(task)
 
         self.worker_queue = None
         self.logger.warn('Worker stopped, %s tasks handled'%self.tasks_counter)
