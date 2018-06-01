@@ -3,7 +3,7 @@ from .worker import Worker
 
 def start():
     global worker_thread
-    worker_thread = Worker(logger_name='main')
+    worker_thread = Worker()
 
 
 def put_task(task):

@@ -13,17 +13,15 @@ from . import settings
 from . import helpers
 
 
+log = logging.getLogger(__name__)
+
+
 class Worker(threading.Thread):
-    def __init__(self, logger_name=None):
+    def __init__(self):
         threading.Thread.__init__(self, name="django-leek")
         self.setDaemon(1)
         self.worker_queue = queue.Queue()
         self.tasks_counter = 0
-        if logger_name != None:
-            self.logger = logging.getLogger(logger_name)
-        else:
-            self.logger = logging
-        
         self.start()
 
     def put_task_on_queue(self, new_pickled_task):
@@ -55,7 +53,7 @@ class Worker(threading.Thread):
         # a thread while loop cycle is atomic
         # thread safe locals: L = threading.local(), then L.foo="baz"
         django.setup()
-        self.logger.info('Worker Starts')
+        log.info('Worker Starts')
         done = False
         while not done:
             try:
@@ -64,10 +62,13 @@ class Worker(threading.Thread):
                     done = True
                     break
                 
+                log.info('running task...')
                 self.run_task(task)
                 helpers.save_task_success(task)
+                log.info('...successfully')
             except Exception as e:
-                helpers.save_task_failed(task,e)
+                log.exception("...task failed")
+                helpers.save_task_failed(task, e)
                 
         self.worker_queue = None
-        self.logger.warn('Worker stopped, %s tasks handled'%self.tasks_counter)
+        log.info('Worker stopped, {} tasks handled.'.format(self.tasks_counter))
