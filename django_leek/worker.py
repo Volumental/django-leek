@@ -68,7 +68,10 @@ class Worker(threading.Thread):
                 log.info('...successfully')
             except Exception as e:
                 log.exception("...task failed")
-                helpers.save_task_failed(task, e)
-                
+                try:
+                    helpers.save_task_failed(task, e)
+                except Exception:
+                    log.exception("...could not update task as failed")
+
         self.worker_queue = None
         log.info('Worker stopped, {} tasks handled.'.format(self.tasks_counter))
