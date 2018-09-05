@@ -3,6 +3,7 @@ from django.db import models
 
 class QueuedTasks(models.Model):
     pickled_task = models.CharField(max_length=5000)  #max row 65535
+    pool = models.CharField(max_length=256, null=True)
     queued_on = models.DateTimeField(auto_now_add=True)
 
 

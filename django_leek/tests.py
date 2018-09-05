@@ -7,7 +7,6 @@ from django.test import TestCase
 from django.core.management import call_command
 
 from django_leek.server import TaskSocketServer
-from django_leek.task import Task
 from django_leek import helpers
 
 
@@ -43,9 +42,3 @@ class TestServer(TestCase):
     def test_recv_error(self):
         self._request(OSError('Nuclear Winter'))        
         self.act()
-
-    def test_task(self):
-        task = helpers.save_task_to_db(Task(f))
-        self._request(base64.b64encode(pickle.dumps(task)))        
-        self.act()
-        self.assertEqual(self._response(), b"(True, 'sent')")

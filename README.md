@@ -68,6 +68,12 @@ With `django-leek` you can get up and running quickly The more complex distribut
 		send_mail.offload(to='sync@leek.com')  # now runs synchronously, like a normal function
     ```
 
+## Development
+There is a test application you can play around with when developing on `django-leek`. Example:
+
+1. `./manage.sh test_app runserver` - Starts the test app
+2. `./manage.sh test_app leek` - Starts a leek instance for the test app
+3. `./manage.sh django_leek test` - Run test suite.
 
 ## Technical overview
 In a nutshell, a python SocketServer runs in the background, listening on a tcp socket. SocketServer gets the request to run a task from it's socket, puts the task on a Queue. A Worker thread picks tasks from this Queue, and runs the tasks one by one.
