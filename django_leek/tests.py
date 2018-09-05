@@ -2,7 +2,6 @@ import base64
 import pickle
 from unittest.mock import patch, MagicMock
 import socketserver
-from functools import partial
 
 from django.test import TestCase
 from django.core.management import call_command

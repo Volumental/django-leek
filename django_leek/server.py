@@ -9,11 +9,7 @@ from . import helpers
 log = logging.getLogger(__name__)
 
 
-Dcommands = {
-#    'waiting': worker_manager.waiting,
-#    'handled': worker_manager.hanled,
-#    'stop': worker_manager.stop
-}
+Dcommands = {}
 
 
 class Pool(object):
