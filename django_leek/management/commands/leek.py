@@ -25,6 +25,7 @@ class Command(BaseCommand):
             host, port = _endpoint(cfg.get('bind', 'localhost:8002'))
 
             print('Listening on {port}'.format(port=port))
+            socketserver.TCPServer.allow_reuse_address = True
             server = socketserver.TCPServer((host, port), TaskSocketServer)
             server.serve_forever()
         except KeyboardInterrupt:
