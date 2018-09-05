@@ -3,6 +3,7 @@ import socketserver
 import threading
 
 from . import worker_manager
+from .helpers import load_task
 
 
 log = logging.getLogger(__name__)
@@ -33,7 +34,9 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
                 # assume a serialized task
                 log.info('Got a task')
                 try:
-                    response = worker_manager.put_task(data)
+                    task_id = int(data.decode())
+                    queued_task = load_task(task_id=task_id)
+                    response = worker_manager.put_task(queued_task.pickled_task)
                     self.request.send(str(response).encode())
                 except Exception as e:
                     log.exception("failed to queue task")

@@ -18,9 +18,9 @@ def push_task_to_queue(a_callable, *args, **kwargs):
     """Original API"""
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
     new_task = Task(a_callable, *args, **kwargs)
-    new_task = helpers.save_task_to_db(new_task)  # returns with db_id
+    queued_task = helpers.save_task_to_db(new_task)
     sock.connect((HOST, PORT))
-    sock.send(helpers.serielize(new_task))
+    sock.send("{}".format(queued_task.id).encode())
     received = sock.recv(1024)
     sock.close()
 

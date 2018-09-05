@@ -7,8 +7,8 @@ from .task import Task
 
 
 def unpack(pickled_task):
-    new_task =  pickle.loads(base64.b64decode(pickled_task))
-    assert isinstance(new_task,Task)
+    new_task = pickle.loads(base64.b64decode(pickled_task))
+    assert isinstance(new_task, Task)
     return new_task
 
 
@@ -16,19 +16,12 @@ def serielize(task):
     return base64.b64encode(pickle.dumps(task))
 
 
+def load_task(task_id):
+    return models.QueuedTasks.objects.get(pk=task_id)
+
+
 def save_task_to_db(new_task):
     pickled_task = serielize(new_task)
     t = models.QueuedTasks(pickled_task=pickled_task)
     t.save()
-    new_task.db_id = t.id
-    return new_task
-
-
-def save_task_failed(task,exception):
-    t = models.FailedTasks(task_id=task.db_id, exception=str(exception))
-    t.save()
-    
-    
-def save_task_success(task):
-    t = models.SuccessTasks(task_id=task.db_id)
-    t.save()
+    return t
