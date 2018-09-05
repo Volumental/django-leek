@@ -25,7 +25,7 @@ class Pool(object):
 class TaskSocketServer(socketserver.BaseRequestHandler):
     DEFAULT_POOL = 'default'
     # pools holds a mapping from pool names to process objects
-    pools = {DEFAULT_POOL: None}
+    pools = {}
 
     def handle(self):
         try:
@@ -49,10 +49,10 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
                     
                     # Ensure pool got a worker processing it
                     pool_name = queued_task.pool or self.DEFAULT_POOL
-                    pool = self.pools[pool_name]
+                    pool = self.pools.get(pool_name)
                     if pool is None or not pool.worker.is_alive():
                         # Spawn new pool
-                        log.info('Spawning new pool: {}'.format(pool_name))                        
+                        log.info('Spawning new pool: {}'.format(pool_name))
                         if pool is not None:
                             print(pool.worker.is_alive())
                         self.pools[pool_name] = Pool()
