@@ -2,12 +2,12 @@ import base64
 import pickle
 from unittest.mock import patch, MagicMock
 import socketserver
+from functools import partial
 
 from django.test import TestCase
 from django.core.management import call_command
 
 from django_leek.server import TaskSocketServer
-from django_leek.task import Task
 from django_leek import helpers
 
 
@@ -45,7 +45,7 @@ class TestServer(TestCase):
         self.act()
 
     def test_task(self):
-        task = helpers.save_task_to_db(Task(f))
+        task = helpers.save_task_to_db(partial(f))
         self._request(base64.b64encode(pickle.dumps(task)))        
         self.act()
         self.assertEqual(self._response(), b"(True, 'sent')")

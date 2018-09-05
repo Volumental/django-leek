@@ -1,6 +1,5 @@
 import socket
-from functools import wraps
-from .task import Task
+from functools import wraps, partial
 from . import helpers
 from .settings import HOST, PORT
 
@@ -17,7 +16,7 @@ class Leek(object):
 def push_task_to_queue(a_callable, *args, **kwargs):
     """Original API"""
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
-    new_task = Task(a_callable, *args, **kwargs)
+    new_task = partial(a_callable, *args, **kwargs)
     queued_task = helpers.save_task_to_db(new_task)
     sock.connect((HOST, PORT))
     sock.send("{}".format(queued_task.id).encode())

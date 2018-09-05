@@ -28,7 +28,7 @@ def target(queue):
                 break
                 
             log.info('running task...')
-            task.run()
+            task()
             #helpers.save_task_success(task)
             log.info('...successfully')
         except Exception as e:
