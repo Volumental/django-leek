@@ -14,8 +14,9 @@ class Leek(object):
         return f
 
 
-def push_task_to_queue(a_callable, pool_name=None, *args, **kwargs):
+def push_task_to_queue(a_callable, *args, **kwargs):
     """Original API"""
+    pool_name = kwargs.pop('pool_name', None)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
     new_task = partial(a_callable, *args, **kwargs)
     queued_task = helpers.save_task_to_db(new_task, pool_name)

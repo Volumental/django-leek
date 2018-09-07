@@ -1,4 +1,5 @@
 import base64
+from functools import partial
 import pickle
 from unittest.mock import patch, MagicMock
 import socketserver
@@ -42,3 +43,9 @@ class TestServer(TestCase):
     def test_recv_error(self):
         self._request(OSError('Nuclear Winter'))        
         self.act()
+
+    def test_task(self):
+        task = helpers.save_task_to_db(partial(f), 'pool_name')
+        self._request(str(task.id).encode())
+        self.act()
+        self.assertEqual(self._response(), b"(True, 'sent')")

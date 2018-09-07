@@ -49,8 +49,6 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
                     if pool is None or not pool.worker.is_alive():
                         # Spawn new pool
                         log.info('Spawning new pool: {}'.format(pool_name))
-                        if pool is not None:
-                            print(pool.worker.is_alive())
                         self.pools[pool_name] = Pool()
                         self.pools[pool_name].worker.start()
 
@@ -67,3 +65,7 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
         except OSError as e:
             # in case of network error, just log
             log.exception("network error")
+
+    def finish(self):
+        for pool in self.pools.values():
+            pool.queue.put(None)

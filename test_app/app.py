@@ -26,7 +26,8 @@ def index(request):
         hello(to='sync')
         
         # Run async
-        hello.offload(to='new')
+        hello.offload(to='kwargs')
+        hello.offload('args')
 
         push_task_to_queue(hello, to='old')
         return render(request, 'index.html', {'message': '✓ task queued'})
