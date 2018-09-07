@@ -67,3 +67,7 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
         except OSError as e:
             # in case of network error, just log
             log.exception("network error")
+
+    def finish(self):
+        for pool in self.pools.values():
+            pool.queue.put(None)

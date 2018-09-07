@@ -1,4 +1,5 @@
 import base64
+from functools import partial
 import pickle
 from unittest.mock import patch, MagicMock
 import socketserver
@@ -44,7 +45,7 @@ class TestServer(TestCase):
         self.act()
 
     def test_task(self):
-        task = helpers.save_task_to_db(partial(f))
-        self._request(base64.b64encode(pickle.dumps(task)))        
+        task = helpers.save_task_to_db(partial(f), 'pool_name')
+        self._request(str(task.id).encode())
         self.act()
         self.assertEqual(self._response(), b"(True, 'sent')")
