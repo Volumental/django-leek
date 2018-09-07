@@ -9,7 +9,7 @@ class Leek(object):
         pool_name = pool or f.__name__
         @wraps(f)
         def _offload(*args, **kwargs):
-            return push_task_to_queue(f, pool_name=pool_name, *args, **kwargs)
+            return push_task_to_queue(f, pool_name, *args, **kwargs)
         f.offload = _offload
         return f
 
