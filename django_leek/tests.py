@@ -42,3 +42,9 @@ class TestServer(TestCase):
     def test_recv_error(self):
         self._request(OSError('Nuclear Winter'))        
         self.act()
+
+    def test_task(self):
+        task = helpers.save_task_to_db(partial(f))
+        self._request(base64.b64encode(pickle.dumps(task)))        
+        self.act()
+        self.assertEqual(self._response(), b"(True, 'sent')")
