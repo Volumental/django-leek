@@ -1,5 +1,4 @@
 import base64
-from functools import partial
 import pickle
 from unittest.mock import patch, MagicMock
 import socketserver
@@ -8,7 +7,7 @@ from django.test import TestCase
 from django.core.management import call_command
 
 from django_leek.server import TaskSocketServer
-from django_leek import helpers
+from django_leek import helpers, api
 
 
 @patch.object(socketserver.TCPServer, 'serve_forever')
@@ -45,7 +44,7 @@ class TestServer(TestCase):
         self.act()
 
     def test_task(self):
-        task = helpers.save_task_to_db(partial(f), 'pool_name')
+        task = helpers.save_task_to_db(api.Task(f), 'pool_name')
         self._request(str(task.id).encode())
         self.act()
         self.assertEqual(self._response(), b"(True, 'sent')")
