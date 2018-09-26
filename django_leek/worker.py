@@ -29,7 +29,9 @@ def target(queue):
                 
             log.info('running task...')
             task()
-            #helpers.save_task_success(task)
+            # workaround to solve problems with django + psycopg2
+            # solution found here: https://stackoverflow.com/a/36580629/10385696
+            django.db.connection.close()
             log.info('...successfully')
         except Exception as e:
             log.exception("...task failed")
