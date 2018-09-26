@@ -1,17 +1,7 @@
 #  Based on the Worker class from Python in a nutshell, by Alex Martelli
 import logging
-import os
-import sys
-import threading
-import queue
-
 
 import django
-
-
-from . import settings
-from . import helpers
-
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +19,9 @@ def target(queue):
                 
             log.info('running task...')
             task()
-            #helpers.save_task_success(task)
+            # workaround to solve problems with django + psycopg2
+            # solution found here: https://stackoverflow.com/a/36580629/10385696
+            django.db.connection.close()
             log.info('...successfully')
         except Exception as e:
             log.exception("...task failed")

@@ -1,4 +1,3 @@
-import datetime
 import pickle
 import base64
 
@@ -7,7 +6,6 @@ from . import models
 
 def unpack(pickled_task):
     new_task = pickle.loads(base64.b64decode(pickled_task))
-    #assert isinstance(new_task, partial)
     return new_task
 
 
