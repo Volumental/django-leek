@@ -1,8 +1,6 @@
 import pickle
 import base64
 import os
-import sys
-
 # environ settings variable, should be the same as in manage.py
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
 os.environ["DJANGO_SETTINGS_MODULE"] = "mysite.settings"

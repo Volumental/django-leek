@@ -1,5 +1,3 @@
-import base64
-import pickle
 from unittest.mock import patch, MagicMock
 import socketserver
 
@@ -20,8 +18,10 @@ class LeekCommandTestCase(TestCase):
         serve_forever.side_effect = KeyboardInterrupt
         call_command('leek')
 
+
 def f():
     pass
+
 
 class TestServer(TestCase):
     def setUp(self):

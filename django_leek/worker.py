@@ -1,17 +1,7 @@
 #  Based on the Worker class from Python in a nutshell, by Alex Martelli
 import logging
-import os
-import sys
-import threading
-import queue
-
 
 import django
-
-
-from . import settings
-from . import helpers
-
 
 log = logging.getLogger(__name__)
 

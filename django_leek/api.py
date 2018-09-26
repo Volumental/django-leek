@@ -7,6 +7,7 @@ from .settings import HOST, PORT
 class Leek(object):
     def task(self, f, pool=None):
         pool_name = pool or f.__name__
+
         @wraps(f)
         def _offload(*args, **kwargs):
             return push_task_to_queue(f, pool_name=pool_name, *args, **kwargs)
