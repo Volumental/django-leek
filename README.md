@@ -143,8 +143,20 @@ The SQL to delete these tasks:
 In a similar way, delete the failed tasks.
 You can run a cron script, or other script, to purge the tasks.
 
+## Release a new version
+1. Checkout master branch
+2. Make sure virtual environment is activated. `source venv/bin/activate`
+3, Make sure version in `setup.py` is correct. `grep version setup.py`
+4. Make sure setuptools, twine, and wheel are installed and up to date  
+
+       pip install "setuptools>=38.6.0" "twine>=1.11.0" "wheel>=0.31.0"
+
+5. Clean out any old dist packages. `rm -r dist/`
+6. Build source and wheel dists. `python setup.py sdist bdist_wheel`
+7. Upload to PyPI `twine upload dist/*`
+8. Profit!
 
 ## Authors
-Aviah and Samuel Carlsson
+Aviah, Silvia Scalisi and Samuel Carlsson
 
 See [contributors]( https://github.com/Volumental/django-leek/graphs/contributors) for full list.
