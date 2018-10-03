@@ -146,7 +146,7 @@ You can run a cron script, or other script, to purge the tasks.
 ## Release a new version
 1. Checkout master branch
 2. Make sure virtual environment is activated. `source venv/bin/activate`
-3, Make sure version in `setup.py` is correct. `grep version setup.py`
+3. Make sure version in `setup.py` is correct. `grep version setup.py`
 4. Make sure setuptools, twine, and wheel are installed and up to date  
 
        pip install "setuptools>=38.6.0" "twine>=1.11.0" "wheel>=0.31.0"
