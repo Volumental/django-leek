@@ -5,6 +5,7 @@ import multiprocessing
 from .helpers import load_task
 from . import worker
 from . import helpers
+import django
 
 log = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
                 log.info('Got a task')
                 try:
                     task_id = int(data.decode())
+                    django.db.connections.close_all()
                     queued_task = load_task(task_id=task_id)
                     
                     # Ensure pool got a worker processing it
