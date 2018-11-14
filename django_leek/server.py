@@ -42,6 +42,8 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
                 log.info('Got a task')
                 try:
                     task_id = int(data.decode())
+                    
+                    # Connection are closed by tasks, force it to reconnect
                     django.db.connections.close_all()
                     queued_task = load_task(task_id=task_id)
                     
