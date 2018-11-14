@@ -18,6 +18,10 @@ def target(queue):
                 break
                 
             log.info('running task...')
+
+            # Force this forked process to create its own db connection
+            django.db.connection.close()
+
             task()
             # workaround to solve problems with django + psycopg2
             # solution found here: https://stackoverflow.com/a/36580629/10385696
