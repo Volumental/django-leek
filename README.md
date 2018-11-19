@@ -28,7 +28,7 @@ With `django-leek` you can get up and running quickly The more complex distribut
     $ pip install django-leek
 	````
 
-2. Add `django-leek` to `INSTALLED_APPS` in your `settings.py` file.
+2. Add `django_leek` to `INSTALLED_APPS` in your `settings.py` file.
 
 3. Create tables needed
 
@@ -39,7 +39,7 @@ With `django-leek` you can get up and running quickly The more complex distribut
 4. Make sure the django-leek server is running.
 
 	```bash
-	$ python manage.py runleek
+	$ python manage.py leek
 	```
 
 5. Go nuts
