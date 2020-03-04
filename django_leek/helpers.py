@@ -13,7 +13,7 @@ def serialize(task):
     return base64.b64encode(pickle.dumps(task))
 
 
-def load_task(task_id):
+def load_task(task_id) -> models.Task:
     return models.Task.objects.get(pk=task_id)
 
 

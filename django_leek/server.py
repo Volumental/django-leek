@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import socketserver
 import multiprocessing
@@ -14,24 +15,36 @@ def target(queue):
     log.info('Worker Starts')
     done = False
     while not done:
+        task_id = queue.get()
+        if task_id is None:
+            done = True
+            break
+
+        log.info('running task...')
+
+        # Force this forked process to create its own db connection
+        django.db.connection.close()
+
+        task = load_task(task_id=task_id)
+        t = helpers.unpack(task.pickled_task)
         try:
-            task = queue.get()
-            if task is None:
-                done = True
-                break
-                
-            log.info('running task...')
+            task.started_at = datetime.now()
+            task.save()
+            r = t()
+            task.finished_at = datetime.now()
+            task.pickled_return = helpers.serialize(r)
+            task.save()
 
-            # Force this forked process to create its own db connection
-            django.db.connection.close()
-
-            task()
-            # workaround to solve problems with django + psycopg2
-            # solution found here: https://stackoverflow.com/a/36580629/10385696
-            django.db.connection.close()
             log.info('...successfully')
         except Exception as e:
             log.exception("...task failed")
+            task.finished_at = datetime.now()
+            task.exception = helpers.serialize(e)
+            task.save()
+
+    # workaround to solve problems with django + psycopg2
+    # solution found here: https://stackoverflow.com/a/36580629/10385696
+    django.db.connection.close()
 
     log.info('Worker stopped')
 
@@ -58,10 +71,10 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
                 
                 # Connection are closed by tasks, force it to reconnect
                 django.db.connections.close_all()
-                queued_task = load_task(task_id=task_id)
+                task = load_task(task_id=task_id)
                 
                 # Ensure pool got a worker processing it
-                pool_name = queued_task.pool or self.DEFAULT_POOL
+                pool_name = task.pool or self.DEFAULT_POOL
                 pool = self.pools.get(pool_name)
                 if pool is None or not pool.worker.is_alive():
                     # Spawn new pool
@@ -69,8 +82,7 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
                     self.pools[pool_name] = Pool()
                     self.pools[pool_name].worker.start()
 
-                task = helpers.unpack(queued_task.pickled_task)
-                self.pools[pool_name].queue.put(task)
+                self.pools[pool_name].queue.put(task_id)
 
                 response = (True, "sent")
                 self.request.send(str(response).encode())

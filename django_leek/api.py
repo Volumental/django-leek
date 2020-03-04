@@ -23,7 +23,7 @@ class Task(object):
         self.kwargs = kwargs
     
     def __call__(self):
-        self.task_callable(*self.args, **self.kwargs)
+        return self.task_callable(*self.args, **self.kwargs)
 
 
 def push_task_to_queue(a_callable, *args, **kwargs):

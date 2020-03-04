@@ -18,6 +18,7 @@ def hello(to):
     person.save()
 
     print('Hello {}!'.format(to))
+    return 'wow'
 
 
 def index(request):
