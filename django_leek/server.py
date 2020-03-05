@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 import logging
 import socketserver
 import multiprocessing
@@ -39,7 +40,7 @@ def target(queue):
         except Exception as e:
             log.exception("...task failed")
             task.finished_at = datetime.now()
-            task.exception = helpers.serialize(e)
+            task.pickled_exception = helpers.serialize(e)
             task.save()
 
     # workaround to solve problems with django + psycopg2
@@ -66,6 +67,7 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
 
             # assume a serialized task
             log.info('Got a task')
+            response = None
             try:
                 task_id = int(data.decode())
                 
@@ -84,12 +86,17 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
 
                 self.pools[pool_name].queue.put(task_id)
 
-                response = (True, "sent")
-                self.request.send(str(response).encode())
+                response = {'task': 'queued', 'task_id': task_id}
             except Exception as e:
                 log.exception("failed to queue task")
                 response = (False, "TaskServer Put: {}".format(e).encode(),)
-                self.request.send(str(response).encode())
+                response = {
+                    'task': 'failed to queue',
+                    'task_id': task_id,
+                    'error': str(e)
+                }
+            
+            self.request.send(json.dumps(response).encode())
 
         except OSError as e:
             # in case of network error, just log

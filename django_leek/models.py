@@ -1,3 +1,7 @@
+import base64
+import pickle
+from typing import Any
+
 from django.db import models
 
 
@@ -7,5 +11,17 @@ class Task(models.Model):
     queued_on = models.DateTimeField(auto_now_add=True)
     started_at = models.DateTimeField(null=True)
     finished_at = models.DateTimeField(null=True)
-    exception = models.CharField(max_length=2048, null=True)
+    pickled_exception = models.CharField(max_length=2048, null=True)
     pickled_return = models.BinaryField(max_length=4096, null=True)
+
+    @property
+    def exception(self):
+        if self.pickled_exception is None:
+            return None
+        return pickle.loads(base64.b64decode(self.pickled_exception))
+
+    @property
+    def return_value(self):
+        if self.pickled_return is None:
+            return None
+        return pickle.loads(base64.b64decode(self.pickled_return))

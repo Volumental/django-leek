@@ -3,8 +3,47 @@
   <body>
     <p>{{ message }}</p>
     <form>
+      <p id="status"></p>
       <input type="hidden" name="queue">
       <input type="submit" value="Queue task">
     </form>
+    <script>
+      var task_id = {{ task_id }};
+      console.log(task_id);
+      function is_finished(task) {
+        return task.finished_at !== null;
+      }
+      function task_status(task) {
+        if (is_finished(task)) {
+          return task.exception === null ? "success" : "failure";
+        }
+        if (task.started_at !== null) {
+          return "running";
+        }
+        if (task.queued_on !== null) {
+          return "queued";
+        }
+        return "pending";
+      }
+
+      function query() {
+        fetch('/query/' + task_id)
+          .then((response) => {
+            return response.json();
+          })
+          .then((task) => {
+            console.log(task);
+            var element = document.getElementById('status');
+            element.innerText = task_status(task);
+            if (is_finished(task)) {
+              clearInterval(interval);
+            }
+          });
+      }
+      if (task_id !== null) {
+        var interval = setInterval(query, 500);
+      }
+
+    </script>
   </body>
 </html>
