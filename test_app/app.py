@@ -58,7 +58,7 @@ def index(request):
 def query(request, task_id):
     task = query_task(task_id)
     data = {
-        'queued_on': task.queued_on,
+        'queued_at': task.queued_at,
         'started_at': task.started_at,
         'finished_at': task.finished_at,
         'exception': str(task.exception),
