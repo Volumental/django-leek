@@ -1,3 +1,4 @@
+import json
 from unittest.mock import patch, MagicMock
 import socketserver
 
@@ -19,7 +20,7 @@ class LeekCommandTestCase(TestCase):
         call_command('leek')
 
 
-def f():
+def nop():
     pass
 
 
@@ -44,7 +45,8 @@ class TestServer(TestCase):
         self.act()
 
     def test_task(self):
-        task = helpers.save_task_to_db(api.Task(f), 'pool_name')
+        task = helpers.save_task_to_db(api.Task(nop), 'pool_name')
         self._request(str(task.id).encode())
         self.act()
-        self.assertEqual(self._response(), b"(True, 'sent')")
+        actual = json.loads(self._response().decode())
+        self.assertEqual(actual, {"task": "queued", "task_id": 1})
