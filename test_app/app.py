@@ -18,13 +18,17 @@ class Person(models.Model):
 
 
 @leek.task
-def hello(to):
-    raise ValueError('ops')
-    #person = Person.objects.create(name="to")
-    #person.save()
+def fail():
+    ValueError('ops')
 
-    #print('Hello {}!'.format(to))
-    #return 'ok'
+
+@leek.task
+def hello(to):
+    person = Person.objects.create(name="to")
+    person.save()
+
+    print('Hello {}!'.format(to))
+    return 'ok'
 
 
 @leek.task
@@ -43,8 +47,9 @@ def index(request):
         #hello(to='sync')
         
         # Run async
-        r = hello.offload(to='kwargs')
-        #r = slow.offload(seconds=5)
+        hello.offload(to='kwargs')
+        fail.offload()
+        r = slow.offload(seconds=5)
 
         push_task_to_queue(hello, to='old')
         return render(request, 'index.html', {
@@ -61,7 +66,7 @@ def query(request, task_id):
         'queued_at': task.queued_at,
         'started_at': task.started_at,
         'finished_at': task.finished_at,
-        'exception': str(task.exception),
+        'exception': str(task.exception) if task.exception else None,
         'return_value': task.return_value
     }
     return HttpResponse(
