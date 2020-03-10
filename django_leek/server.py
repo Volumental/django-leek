@@ -29,13 +29,13 @@ def target(queue):
         django.db.connection.close()
 
         task = load_task(task_id=task_id)
-        t = helpers.unpack(task.pickled_task)
+        pickled_task = helpers.unpack(task.pickled_task)
         try:
             task.started_at = timezone.now()
             task.save()
-            r = t()
+            return_value = pickled_task()
             task.finished_at = timezone.now()
-            task.pickled_return = helpers.serialize(r)
+            task.pickled_return = helpers.serialize(return_value)
             task.save()
 
             log.info('...successfully')
