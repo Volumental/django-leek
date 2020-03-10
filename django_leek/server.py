@@ -6,7 +6,9 @@ import multiprocessing
 
 from .helpers import load_task
 from . import helpers
+from django.utils import timezone
 import django
+
 
 log = logging.getLogger(__name__)
 
@@ -29,17 +31,17 @@ def target(queue):
         task = load_task(task_id=task_id)
         t = helpers.unpack(task.pickled_task)
         try:
-            task.started_at = datetime.now()
+            task.started_at = timezone.now()
             task.save()
             r = t()
-            task.finished_at = datetime.now()
+            task.finished_at = timezone.now()
             task.pickled_return = helpers.serialize(r)
             task.save()
 
             log.info('...successfully')
         except Exception as e:
             log.exception("...task failed")
-            task.finished_at = datetime.now()
+            task.finished_at = timezone.now()
             task.pickled_exception = helpers.serialize(e)
             task.save()
 
