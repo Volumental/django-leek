@@ -11,7 +11,7 @@ class Task(models.Model):
     queued_at = models.DateTimeField(auto_now_add=True)
     started_at = models.DateTimeField(null=True)
     finished_at = models.DateTimeField(null=True)
-    pickled_exception = models.CharField(max_length=2048, null=True)
+    pickled_exception = models.BinaryField(max_length=2048, null=True)
     pickled_return = models.BinaryField(max_length=4096, null=True)
 
     @property
