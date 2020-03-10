@@ -1,5 +1,8 @@
 import socket
 from functools import wraps
+import json
+
+from . import models
 from . import helpers
 from .settings import HOST, PORT
 
@@ -21,9 +24,9 @@ class Task(object):
         self.task_callable = a_callable
         self.args = args
         self.kwargs = kwargs
-    
+        
     def __call__(self):
-        self.task_callable(*self.args, **self.kwargs)
+        return self.task_callable(*self.args, **self.kwargs)
 
 
 def push_task_to_queue(a_callable, *args, **kwargs):
@@ -36,5 +39,8 @@ def push_task_to_queue(a_callable, *args, **kwargs):
     sock.send("{}".format(queued_task.id).encode())
     received = sock.recv(1024)
     sock.close()
+    return json.loads(received.decode())
 
-    return received
+
+def query_task(task_id: int) -> models.Task:
+    return helpers.load_task(task_id)

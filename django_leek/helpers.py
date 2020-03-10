@@ -13,12 +13,12 @@ def serialize(task):
     return base64.b64encode(pickle.dumps(task))
 
 
-def load_task(task_id):
-    return models.QueuedTasks.objects.get(pk=task_id)
+def load_task(task_id) -> models.Task:
+    return models.Task.objects.get(pk=task_id)
 
 
 def save_task_to_db(new_task, pool_name):
     pickled_task = serialize(new_task)
-    t = models.QueuedTasks(pickled_task=pickled_task, pool=pool_name)
+    t = models.Task(pickled_task=pickled_task, pool=pool_name)
     t.save()
     return t
