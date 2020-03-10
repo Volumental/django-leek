@@ -25,3 +25,12 @@ class Task(models.Model):
         if self.pickled_return is None:
             return None
         return pickle.loads(base64.b64decode(self.pickled_return))
+
+    def started(self) -> bool:
+        return self.started_at is not None
+
+    def finished(self) -> bool:
+        return self.finished_at is not None
+
+    def successful(self) -> bool:
+        return self.finished() and self.pickled_return is not None
