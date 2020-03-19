@@ -1,8 +1,11 @@
 from datetime import datetime
+from sys import platform
 import json
 import logging
 import socketserver
 import multiprocessing
+import queue
+import threading
 
 from .helpers import load_task
 from . import helpers
@@ -54,8 +57,13 @@ def target(queue):
 
 class Pool(object):
     def __init__(self):
-        self.queue = multiprocessing.Queue()
-        self.worker = multiprocessing.Process(target=target, args=(self.queue,))
+        if platform == 'darwin':
+            # OSX does not support forking
+            self.queue = queue.Queue()
+            self.worker = threading.Thread(target=target, args=(self.queue,))
+        else:
+            self.queue = multiprocessing.Queue()
+            self.worker = multiprocessing.Process(target=target, args=(self.queue,))
 
 
 class TaskSocketServer(socketserver.BaseRequestHandler):
