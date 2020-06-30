@@ -1,5 +1,6 @@
 from datetime import datetime
 from sys import platform
+from queue import Empty
 import json
 import logging
 import socketserver
@@ -21,8 +22,9 @@ def target(queue):
     log.info('Worker Starts')
     done = False
     while not done:
-        task_id = queue.get()
-        if task_id is None:
+        try:
+            task_id = queue.get(block=True,timeout=1)
+        except Empty as e:
             done = True
             break
 
@@ -42,6 +44,7 @@ def target(queue):
             task.save()
 
             log.info('...successfully')
+            queue.task_done()
         except Exception as e:
             log.exception("...task failed")
             task.finished_at = timezone.now()
@@ -59,10 +62,10 @@ class Pool(object):
     def __init__(self):
         if platform == 'darwin':
             # OSX does not support forking
-            self.queue = queue.Queue()
+            self.queue = queue.Queue(maxsize=10000)
             self.worker = threading.Thread(target=target, args=(self.queue,))
         else:
-            self.queue = multiprocessing.Queue()
+            self.queue = multiprocessing.Queue(maxsize=10000)
             self.worker = multiprocessing.Process(target=target, args=(self.queue,))
 
 
@@ -80,11 +83,11 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
             response = None
             try:
                 task_id = int(data.decode())
-                
+
                 # Connection are closed by tasks, force it to reconnect
                 django.db.connections.close_all()
                 task = load_task(task_id=task_id)
-                
+
                 # Ensure pool got a worker processing it
                 pool_name = task.pool or self.DEFAULT_POOL
                 pool = self.pools.get(pool_name)
@@ -105,7 +108,7 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
                     'task_id': task_id,
                     'error': str(e)
                 }
-            
+
             self.request.send(json.dumps(response).encode())
 
         except OSError as e:
@@ -113,5 +116,4 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
             log.exception("network error")
 
     def finish(self):
-        for pool in self.pools.values():
-            pool.queue.put(None)
+        None
