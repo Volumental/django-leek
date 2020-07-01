@@ -21,6 +21,9 @@ def target(queue):
     log.info('Worker Starts')
     while True:
         task_id = queue.get()
+        if task_id is None:
+            return
+
         log.info('running task...')
 
         # workaround to solve problems with django + psycopg2
@@ -54,6 +57,9 @@ class Pool(object):
         else:
             self.queue = multiprocessing.Queue()
             self.worker = multiprocessing.Process(target=target, args=(self.queue,))
+
+    def stop(self):
+        self.queue.put(None)
 
 
 class TaskSocketServer(socketserver.BaseRequestHandler):
@@ -101,3 +107,9 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
         except OSError as e:
             # in case of network error, just log
             log.exception("network error")
+
+    @staticmethod
+    def stop():
+        for name, pool in TaskSocketServer.pools.items():
+            print('Stopping pool:', name)
+            pool.stop()

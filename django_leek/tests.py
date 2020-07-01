@@ -39,6 +39,7 @@ class TestServer(TestCase):
 
     def act(self):
         TaskSocketServer(self.request, 'client adress', 'server')
+        TaskSocketServer.stop()
 
     def test_recv_error(self):
         self._request(OSError('Nuclear Winter'))        
