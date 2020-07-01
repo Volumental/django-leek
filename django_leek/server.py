@@ -16,6 +16,7 @@ import django
 
 log = logging.getLogger(__name__)
 
+MAX_QUEUE_SIZE = 10000
 
 def target(queue):
     django.setup()
@@ -23,7 +24,7 @@ def target(queue):
     done = False
     while not done:
         try:
-            task_id = queue.get(block=True,timeout=1)
+            task_id = queue.get(block=True, timeout=1)
         except Empty as e:
             done = True
             break
@@ -62,10 +63,10 @@ class Pool(object):
     def __init__(self):
         if platform == 'darwin':
             # OSX does not support forking
-            self.queue = queue.Queue(maxsize=10000)
+            self.queue = queue.Queue(maxsize=MAX_QUEUE_SIZE)
             self.worker = threading.Thread(target=target, args=(self.queue,))
         else:
-            self.queue = multiprocessing.Queue(maxsize=10000)
+            self.queue = multiprocessing.Queue(maxsize=MAX_QUEUE_SIZE)
             self.worker = multiprocessing.Process(target=target, args=(self.queue,))
 
 
