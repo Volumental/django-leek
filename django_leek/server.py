@@ -19,16 +19,15 @@ log = logging.getLogger(__name__)
 def target(queue):
     django.setup()
     log.info('Worker Starts')
-    done = False
-    while not done:
+    while True:
         task_id = queue.get()
         if task_id is None:
-            done = True
-            break
+            return
 
         log.info('running task...')
 
-        # Force this forked process to create its own db connection
+        # workaround to solve problems with django + psycopg2
+        # solution found here: https://stackoverflow.com/a/36580629/10385696
         django.db.connection.close()
 
         task = load_task(task_id=task_id)
@@ -48,12 +47,6 @@ def target(queue):
             task.pickled_exception = helpers.serialize(e)
             task.save()
 
-    # workaround to solve problems with django + psycopg2
-    # solution found here: https://stackoverflow.com/a/36580629/10385696
-    django.db.connection.close()
-
-    log.info('Worker stopped')
-
 
 class Pool(object):
     def __init__(self):
@@ -64,6 +57,9 @@ class Pool(object):
         else:
             self.queue = multiprocessing.Queue()
             self.worker = multiprocessing.Process(target=target, args=(self.queue,))
+
+    def stop(self):
+        self.queue.put(None)
 
 
 class TaskSocketServer(socketserver.BaseRequestHandler):
@@ -112,6 +108,8 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
             # in case of network error, just log
             log.exception("network error")
 
-    def finish(self):
-        for pool in self.pools.values():
-            pool.queue.put(None)
+    @staticmethod
+    def stop():
+        for name, pool in TaskSocketServer.pools.items():
+            print('Stopping pool:', name)
+            pool.stop()
