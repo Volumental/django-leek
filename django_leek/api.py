@@ -24,22 +24,28 @@ class Task(object):
         self.task_callable = a_callable
         self.args = args
         self.kwargs = kwargs
-        
+
     def __call__(self):
         return self.task_callable(*self.args, **self.kwargs)
+
+
+def start_task_with_id(task_id):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((HOST, PORT))
+    sock.send("{}".format(task_id).encode())
+    received = sock.recv(1024)
+    sock.close()
+    return json.loads(received.decode())
 
 
 def push_task_to_queue(a_callable, *args, **kwargs):
     """Original API"""
     pool_name = kwargs.pop('pool_name', None)
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
+
     new_task = Task(a_callable, *args, **kwargs)
     queued_task = helpers.save_task_to_db(new_task, pool_name)
-    sock.connect((HOST, PORT))
-    sock.send("{}".format(queued_task.id).encode())
-    received = sock.recv(1024)
-    sock.close()
-    return json.loads(received.decode())
+
+    return start_task_with_id(queued_task.id)
 
 
 def query_task(task_id: int) -> models.Task:
