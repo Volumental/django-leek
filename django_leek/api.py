@@ -1,4 +1,5 @@
 import socket
+import sys
 from functools import wraps
 import json
 
@@ -14,8 +15,17 @@ class Leek(object):
         @wraps(f)
         def _offload(*args, **kwargs):
             return push_task_to_queue(f, pool_name=pool_name, *args, **kwargs)
+
         f.offload = _offload
         return f
+
+    def list_tasks(self):
+        for db_task in models.Task.objects.all().order_by('queued_at'):
+            try:
+                task = helpers.unpack(db_task.pickled_task)
+                yield db_task, task
+            except (ModuleNotFoundError, AttributeError):  # things that can happen during unpickle
+                print("could not unpickle task", db_task.id, file=sys.stderr)
 
 
 class Task(object):
