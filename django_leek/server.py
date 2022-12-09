@@ -31,6 +31,10 @@ def target(queue):
         django.db.connection.close()
 
         task = load_task(task_id=task_id)
+        if task.finished():
+            print('skipping ', task_id, "as it is already finished")
+            continue
+
         pickled_task = helpers.unpack(task.pickled_task)
         try:
             task.started_at = timezone.now()
