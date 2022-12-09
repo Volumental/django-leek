@@ -76,11 +76,11 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
             response = None
             try:
                 task_id = int(data.decode())
-                
+
                 # Connection are closed by tasks, force it to reconnect
                 django.db.connections.close_all()
                 task = load_task(task_id=task_id)
-                
+
                 # Ensure pool got a worker processing it
                 pool_name = task.pool or self.DEFAULT_POOL
                 pool = self.pools.get(pool_name)
@@ -95,13 +95,12 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
                 response = {'task': 'queued', 'task_id': task_id}
             except Exception as e:
                 log.exception("failed to queue task")
-                response = (False, "TaskServer Put: {}".format(e).encode(),)
-                response = {
-                    'task': 'failed to queue',
-                    'task_id': task_id,
-                    'error': str(e)
-                }
-            
+                response = (
+                    False,
+                    "TaskServer Put: {}".format(e).encode(),
+                )
+                response = {'task': 'failed to queue', 'task_id': task_id, 'error': str(e)}
+
             self.request.send(json.dumps(response).encode())
 
         except OSError as e:
