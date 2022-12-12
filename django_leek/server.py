@@ -1,30 +1,29 @@
-from datetime import datetime
-from sys import platform
 import json
 import logging
-import socketserver
 import multiprocessing
 import queue
+import socketserver
 import threading
+from sys import platform
 
-from .helpers import load_task
-from . import helpers
-from django.utils import timezone
 import django
+from django.utils import timezone
 
+from . import helpers
+from .helpers import load_task
 
 log = logging.getLogger(__name__)
 
 
 def target(queue):
     django.setup()
-    log.info('Worker Starts')
+    log.info("Worker Starts")
     while True:
         task_id = queue.get()
         if task_id is None:
             return
 
-        log.info('running task...')
+        log.info("running task...")
 
         # workaround to solve problems with django + psycopg2
         # solution found here: https://stackoverflow.com/a/36580629/10385696
@@ -32,7 +31,7 @@ def target(queue):
 
         task = load_task(task_id=task_id)
         if task.finished():
-            print('skipping ', task_id, "as it is already finished")
+            log.info("skipping %s as it is already finished", task_id)
             continue
 
         pickled_task = helpers.unpack(task.pickled_task)
@@ -44,7 +43,7 @@ def target(queue):
             task.pickled_return = helpers.serialize(return_value)
             task.save()
 
-            log.info('...successfully')
+            log.info("...successfully")
         except Exception as e:
             log.exception("...task failed")
             task.finished_at = timezone.now()
@@ -76,7 +75,7 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
             data = self.request.recv(5000).strip()
 
             # assume a serialized task
-            log.info('Got a task')
+            log.info("Got a task")
             task_id = None
             try:
                 task_id = int(data.decode())
@@ -90,7 +89,7 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
                 pool = self.pools.get(pool_name)
                 if pool is None or not pool.worker.is_alive():
                     # Spawn new pool
-                    log.info('Spawning new pool: {}'.format(pool_name))
+                    log.info("Spawning new pool: {}".format(pool_name))
                     self.pools[pool_name] = Pool()
                     self.pools[pool_name].worker.start()
 
@@ -110,5 +109,5 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
     @staticmethod
     def stop():
         for name, pool in TaskSocketServer.pools.items():
-            print('Stopping pool:', name)
+            log.info("Stopping pool: %s", name)
             pool.stop()
