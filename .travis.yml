@@ -5,6 +5,6 @@ python:
   - "3.10"
 cache: pip
 script:
-  - pylint django_leek
+  - pylint django_leek --django-settings-module=test_app.settings
   - coverage run $(which django-admin) test --pythonpath=. --settings=django_leek.settings
   - python -m coverage_shield
