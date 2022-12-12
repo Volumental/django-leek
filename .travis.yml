@@ -5,6 +5,7 @@ python:
   - "3.10"
 cache: pip
 script:
+  - export PYTHONPATH=.
   - pylint django_leek
-  - coverage run $(which django-admin) test --pythonpath=. --settings=django_leek.settings
+  - coverage run $(which django-admin) test --settings=django_leek.settings
   - python -m coverage_shield
