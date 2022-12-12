@@ -1,3 +1,4 @@
 [MASTER]
 errors-only=yes
 load-plugins=pylint_django
+django-settings-module=test_app.settings
