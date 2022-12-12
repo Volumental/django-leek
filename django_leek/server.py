@@ -77,7 +77,7 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
 
             # assume a serialized task
             log.info('Got a task')
-            response = None
+            task_id = None
             try:
                 task_id = int(data.decode())
 
@@ -99,10 +99,6 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
                 response = {'task': 'queued', 'task_id': task_id}
             except Exception as e:
                 log.exception("failed to queue task")
-                response = (
-                    False,
-                    "TaskServer Put: {}".format(e).encode(),
-                )
                 response = {'task': 'failed to queue', 'task_id': task_id, 'error': str(e)}
 
             self.request.send(json.dumps(response).encode())
