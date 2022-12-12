@@ -2,7 +2,7 @@ import json
 import socket
 import sys
 from functools import wraps
-from typing import Iterator, Optional
+from typing import Iterator, Optional, Tuple
 
 from . import helpers
 from . import models
@@ -55,7 +55,7 @@ def query_task(task_id: int) -> models.Task:
     return helpers.load_task(task_id)
 
 
-def list_tasks(finished: Optional[bool] = None) -> Iterator[tuple[models.Task, Task]]:
+def list_tasks(finished: Optional[bool] = None) -> Iterator[Tuple[models.Task, Task]]:
     db_tasks = models.Task.objects.all().order_by('queued_at')
     if finished is not None:
         db_tasks = db_tasks.filter(finished_at__isnull=not finished)
