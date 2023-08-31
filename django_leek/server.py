@@ -47,7 +47,13 @@ def target(queue):
         except Exception as e:
             log.exception("...task failed")
             task.finished_at = timezone.now()
-            task.pickled_exception = helpers.serialize(e)
+            try:
+                task.pickled_exception = helpers.serialize(e)
+            except Exception:
+                log.exception("...failed to serialize exception")
+                task.pickled_exception = helpers.serialize(
+                    Exception("Failed to serialize exception: %s" % e)
+                )
             task.save()
 
 
