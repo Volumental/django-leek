@@ -11,9 +11,9 @@ with open('README.md') as f:
 
 setup(
     name='django-leek',
-    version='1.0.4',
+    version='1.0.5',
     packages=find_packages(exclude=['test_app']),
-    install_requires=['django>=1.11'],
+    install_requires=['django>=3.2'],
     include_package_data=True,
     license='MIT License',
     description='A simple Django app to offload tasks from main web server',
@@ -25,12 +25,12 @@ setup(
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 1.11',
+        'Framework :: Django :: 3.2',
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.10',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
