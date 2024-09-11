@@ -128,7 +128,7 @@ def logger_context(
 def _structured_log() -> bool:
     try:
         return settings.STRUCTURED_LOG
-    except ImproperlyConfigured:
+    except (ImproperlyConfigured, AttributeError):
         return False
 
 
