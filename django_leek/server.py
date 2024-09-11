@@ -1,5 +1,4 @@
 import json
-import logging
 import multiprocessing
 import queue
 import socketserver
@@ -9,10 +8,11 @@ from sys import platform
 import django
 from django.utils import timezone
 
+from .cloud_logging import get_logger, logger_context
 from . import helpers
 from .helpers import load_task
 
-log = logging.getLogger(__name__)
+log = get_logger(__name__)
 
 
 def target(queue):
@@ -23,7 +23,7 @@ def target(queue):
         if task_id is None:
             return
 
-        log.info("running task...")
+        log.info("loading task...")
 
         # workaround to solve problems with django + psycopg2
         # solution found here: https://stackoverflow.com/a/36580629/10385696
@@ -35,25 +35,30 @@ def target(queue):
             continue
 
         pickled_task = helpers.unpack(task.pickled_task)
-        try:
-            task.started_at = timezone.now()
-            task.save()
-            return_value = pickled_task()
-            task.finished_at = timezone.now()
-            task.pickled_return = helpers.serialize(return_value)
-            task.save()
 
-            log.info("...successfully")
-        except Exception as e:
-            log.exception("...task failed")
-            task.finished_at = timezone.now()
-            task.pickled_exception = helpers.serialize_exception(e)
-            task.save()
+        with logger_context(
+            logger=log, namespace="leek task", pool=task.pool, **pickled_task.kwargs
+        ):
+            log.info("running task...")
+            try:
+                task.started_at = timezone.now()
+                task.save()
+                return_value = pickled_task()
+                task.finished_at = timezone.now()
+                task.pickled_return = helpers.serialize(return_value)
+                task.save()
+
+                log.info("...successfully")
+            except Exception as e:
+                log.exception("...task failed")
+                task.finished_at = timezone.now()
+                task.pickled_exception = helpers.serialize_exception(e)
+                task.save()
 
 
 class Pool(object):
     def __init__(self):
-        if platform == 'darwin':
+        if platform == "darwin":
             # OSX does not support forking
             self.queue = queue.Queue()
             self.worker = threading.Thread(target=target, args=(self.queue,))
@@ -66,7 +71,7 @@ class Pool(object):
 
 
 class TaskSocketServer(socketserver.BaseRequestHandler):
-    DEFAULT_POOL = 'default'
+    DEFAULT_POOL = "default"
     # pools holds a mapping from pool names to process objects
     pools = {}
 
@@ -95,10 +100,14 @@ class TaskSocketServer(socketserver.BaseRequestHandler):
 
                 self.pools[pool_name].queue.put(task_id)
 
-                response = {'task': 'queued', 'task_id': task_id}
+                response = {"task": "queued", "task_id": task_id}
             except Exception as e:
                 log.exception("failed to queue task")
-                response = {'task': 'failed to queue', 'task_id': task_id, 'error': str(e)}
+                response = {
+                    "task": "failed to queue",
+                    "task_id": task_id,
+                    "error": str(e),
+                }
 
             self.request.send(json.dumps(response).encode())
 
