@@ -36,9 +36,7 @@ def target(queue):
 
         pickled_task = helpers.unpack(task.pickled_task)
 
-        with logger_context(
-            logger=log, namespace="leek task", pool=task.pool, **pickled_task.kwargs
-        ):
+        with logger_context(logger=log, namespace=task.pool, **pickled_task.kwargs):
             log.info("running task...")
             try:
                 task.started_at = timezone.now()
