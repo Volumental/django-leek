@@ -50,21 +50,21 @@ class LoggingContextHandler:
         self.attributes = deque([{}])  # type: deque[dict]
 
     @property
-    def current_attributes(self):
+    def current_attributes(self) -> dict:
         return self.attributes[0]
 
-    def add(self, **new_context_vars):
+    def add(self, **new_context_vars) -> None:
         old_context = self.attributes[0]
         new_context = {**old_context, **new_context_vars}
         self.attributes.appendleft(new_context)
 
-    def get(self, key, default=None):
+    def get(self, key: str, default: Any = None) -> Any:
         return self.attributes[0].get(key, default)
 
-    def remove(self):
+    def remove(self) -> None:
         self.attributes.popleft()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.attributes)
 
 
@@ -73,7 +73,7 @@ class ImportContextFilter(logging.Filter):
         super(ImportContextFilter, self).__init__()
         self.import_logging_context_handler = import_logging_context_handler
 
-    def filter(self, record):
+    def filter(self, record: logging.LogRecord) -> bool:
         record.tenant_name = self.import_logging_context_handler.get("tenant_name")
 
         namespace_str = ">".join(
@@ -89,7 +89,7 @@ class ImportContextFilter(logging.Filter):
 
 
 class TimestampFilter(logging.Filter):
-    def filter(self, record):
+    def filter(self, record: logging.LogRecord) -> bool:
         record.json_fields = {
             **getattr(record, "json_fields", {}),
             "timestamp": str(timezone.now()),
@@ -98,7 +98,7 @@ class TimestampFilter(logging.Filter):
 
 
 @contextmanager
-def append_logger_context_namespace(logger: logging.Logger, namespace: str):
+def append_logger_context_namespace(logger: logging.Logger, namespace: str) -> None:
     logging_context_handler = LOGGING_CONTEXT_MANAGERS[logger.name]
     try:
         next_attributes = copy.deepcopy(logging_context_handler.current_attributes)
@@ -113,7 +113,7 @@ def append_logger_context_namespace(logger: logging.Logger, namespace: str):
 @contextmanager
 def logger_context(
     logger: logging.Logger, namespace: Union[str, Sequence[str]], **kwargs
-):
+) -> None:
     logging_context_handler = LOGGING_CONTEXT_MANAGERS[logger.name]
     try:
         if isinstance(namespace, str):
