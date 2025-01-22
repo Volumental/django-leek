@@ -48,7 +48,11 @@ def target(queue):
 
                 log.info("...successfully")
             except Exception as e:
-                log.exception("...task failed")
+                log.exception(
+                    "leek task failed: %s %s",
+                    task.pool,
+                    pickled_task.kwargs.get("tenant_name"),
+                )
                 task.finished_at = timezone.now()
                 task.pickled_exception = helpers.serialize_exception(e)
                 task.save()
