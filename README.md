@@ -149,11 +149,11 @@ You can run a cron script, or other script, to purge the tasks.
 3. Make sure version in `setup.py` is correct. `grep version setup.py`
 4. Make sure setuptools, twine, and wheel are installed and up to date  
 
-       pip install "setuptools>=38.6.0" "twine>=1.11.0" "wheel>=0.31.0"
+       pip install -r requirements_release.txt
 
 5. Clean out any old dist packages. `rm -r dist/`
 6. Build source and wheel dists. `python setup.py sdist bdist_wheel`
-7. Upload to PyPI `twine upload dist/*`
+7. Upload to PyPI (API token is in 1password) `twine upload dist/*`
 8. Profit!
 
 ## Authors
