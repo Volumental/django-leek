@@ -11,7 +11,7 @@ with open("README.md") as f:
 
 setup(
     name="django-leek",
-    version="1.0.6",
+    version="1.0.7",
     packages=find_packages(exclude=["test_app"]),
     install_requires=["django>=3.2", "google-cloud-logging>=3.0.0"],
     include_package_data=True,
