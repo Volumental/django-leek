@@ -1,7 +1,7 @@
 # Django Leek
 ![Logo](logo.svg)
 
-[![Build Status](https://travis-ci.com/Volumental/django-leek.svg?branch=master)](https://travis-ci.com/Volumental/django-leek)
+[![Build Status](https://github.com/Volumental/django-leek/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Volumental/django-leek/actions/workflows/ci.yml)
 ![Code Coverage](https://badges-io.now.sh/badge/Volumental/django-leek/coverage.svg)
 
 The _simple_ and _slick_ way to run async tasks in Django.
